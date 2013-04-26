@@ -245,48 +245,48 @@ public:
         if ((Data == NULL) || (!IsIn(Data))){
             return;
         }
-        AVLNode<T>* Tmp = Find(Data);
-        AVLNode<T>* Parent = Tmp->Parent;
-        if (Tmp->Height == 0){
-            if ( *(Parent->Left->Data) == *(Tmp->Data)){
-                delete Tmp;
-                Parent->Left = NULL;
+        AVLNode<T>* tmp = Find(Data);
+        AVLNode<T>* parent = tmp->_Parent;
+        if (tmp->Height == 0){
+            if ( *(parent->_Left->_Data) == *(tmp->_Data)){
+                delete tmp;
+                parent->_Left = NULL;
             } else {
-                delete Tmp;
-                Parent->Right = NULL;
+                delete tmp;
+                parent->_Right = NULL;
             }
-        } else if (Tmp->Left && Tmp->Right==NULL){
-            if (Parent->Left == Tmp){
-                Parent->Left = Tmp->Left;
-                delete Tmp;
-            } else if (Parent->Right == Tmp){
-                Parent->Right = Tmp->Left;
-                delete Tmp;
+        } else if (tmp->_Left && tmp->_Right==NULL){
+            if (parent->_Left == tmp){
+                parent->_Left = tmp->_Left;
+                delete tmp;
+            } else if (parent->_Right == tmp){
+                parent->_Right = tmp->_Left;
+                delete tmp;
             }
-        } else if (Tmp->Right && Tmp->Left==NULL){
-            if (Parent->Left == Tmp){
-                Parent->Left = Tmp->Right;
-                delete Tmp;
-            } else if (Parent->Right == Tmp){
-            Parent->Right = Tmp->Right;
-                delete Tmp;
+        } else if (tmp->_Right && tmp->_Left==NULL){
+            if (parent->_Left == tmp){
+                parent->_Left = tmp->_Right;
+                delete tmp;
+            } else if (parent->_Right == tmp){
+            parent->_Right = tmp->_Right;
+                delete tmp;
             }
         } else {
-            AVLNode<T>* ToSwap = SubTreeMin(Tmp->Right);
-            AVLNode<T>* SwapParent = ToSwap->Parent;
-            SwapParent->Left=NULL;
-            if (Parent->Right == Tmp){
-                Parent->Right = ToSwap;
-                SwapNodes(Tmp, ToSwap);
+            AVLNode<T>* ToSwap = SubTreeMin(tmp->_Right);
+            AVLNode<T>* SwapParent = ToSwap->_Parent;
+            SwapParent->_Left=NULL;
+            if (parent->_Right == tmp){
+                parent->_Right = ToSwap;
+                SwapNodes(tmp, ToSwap);
             }else {
-                Parent->Left = ToSwap;
-                SwapNodes(Tmp, ToSwap);
+                parent->_Left = ToSwap;
+                SwapNodes(tmp, ToSwap);
             }
-            delete Tmp;
-            if (SwapParent->Height >= 2){
+            delete tmp;
+            if (SwapParent->_Height >= 2){
                 NodeBalanceUpdate(SwapParent);
             } else {
-                if (SwapParent->Right){
+                if (SwapParent->_Right){
                     NodeBalanceUpdate(SwapParent);
                 }else{
                     UpdateHeights(SwapParent, 'R');
@@ -299,14 +299,14 @@ public:
     }
 
     bool IsIn(T* Data){
-        AVLNode<T>* Current = Root;
-        while(Current){
-            if (*Data < *(Current->Data)){
-                Current=Current->Left;
+        AVLNode<T>* current = Root;
+        while(current){
+            if (*Data < *(current->_Data)){
+                current=current->_Left;
                 continue;
             }
-            if  (*Data > *(Current->Data)){
-                Current=Current->Right;
+            if  (*Data > *(current->_Data)){
+                current=current->_Right;
                 continue;
             }
             return true;
