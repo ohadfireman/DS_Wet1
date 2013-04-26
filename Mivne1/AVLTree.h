@@ -13,7 +13,7 @@
 #include "library1.h"
 #include "AVLNode.h"
 
-
+using std::string;
 template <typename T>
 class AVLTree {
     AVLNode<T>* Root;
@@ -27,9 +27,9 @@ class AVLTree {
      * Note: insertion heights are calculated from the inserted node up,
      *       removal heights are calculated from the removed node's parent up.
      */
-    void UpdateHeights (AVLNode<T>* Node, char Mode) {
+    void UpdateHeights (AVLNode<T>* Node, string Mode) {
         AVLNode<T>* updater=Node;
-        if (Mode == 'I'){
+        if (Mode == "Insert"){
             while (updater->_Parent){
                 if (updater->_Parent->_Height >= updater->_Height+1){
                     break;
@@ -37,7 +37,7 @@ class AVLTree {
                 updater->_Parent->_Height = updater->_Height+1;
                 updater = updater->_Parent;
             }
-        } else if (Mode == 'R'){
+        } else if (Mode == "Remove"){
             Node->_Height=0;
             updater = Node->_Parent;
             while (updater) {
@@ -207,7 +207,7 @@ public:
         }else {
             parent->_Right = tmp;
         }
-        UpdateHeights(tmp,'I');
+        UpdateHeights(tmp,"Insert");
         NodeBalanceUpdate(parent);
         //Step 3
         while (tmp->_Parent){
@@ -289,7 +289,7 @@ public:
                 if (SwapParent->_Right){
                     NodeBalanceUpdate(SwapParent);
                 }else{
-                    UpdateHeights(SwapParent, 'R');
+                    UpdateHeights(SwapParent, "Remove");
                     NodeBalanceUpdate(SwapParent);
                 }
             }
@@ -349,7 +349,7 @@ public:
                 parent->_Right = child;
             }
         }
-        UpdateHeights(child, 'I');
+        UpdateHeights(child, "Insert");
         NodeBalanceUpdate(grandChild);
         return Node;
     }
