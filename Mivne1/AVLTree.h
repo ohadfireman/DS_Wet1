@@ -22,8 +22,9 @@ class AVLTree {
      * Description: used to update the heights of nodes from a node in a tree
      *          up to the root of the tree.
      * @param Node: Node to start updating from.
-     * @param Mode: will be I if called from node insertion,
-     *          R if called from node removal.
+     * @param Mode: will be "Insert" if called from node insertion,
+     *          "Remove" if called from node removal.
+     *          "Roll" if called from a roll correction of the tree.
      * Note: insertion heights are calculated from the inserted node up,
      *       removal heights are calculated from the removed node's parent up.
      */
@@ -55,6 +56,11 @@ class AVLTree {
                 }
                 updater=updater->_Parent;
             }
+        } else if (Mode == "Roll"){
+            while (updater) {
+                updater->_Height =MaxSubTreeHeight(updater)+1;
+                updater = updater->_Parent;
+            }
         }
         
     }
@@ -74,18 +80,8 @@ class AVLTree {
                 updater->_Balance = (updater->_Left->_Height) - (updater->_Right->_Height);
             } else if (updater->_Left == NULL){
                 updater->_Balance = (-1)*(updater->_Height);
-              /*  if (updater->_Right->_Height){
-                    updater->_Balance = (-1)*(updater->_Right->_Height);
-                } else {
-                    updater->_Balance = -1;
-                }*/
             } else if (updater->_Right == NULL){
                 updater->_Balance = updater->_Height;
-              /*  if (updater->_Left->_Height){
-                    updater->_Balance = (updater->_Left->_Height);
-                } else {
-                    updater->_Balance = 1;
-                }*/
             }
             updater = updater->_Parent;
         }
@@ -98,7 +94,7 @@ class AVLTree {
      * @return: NULL if SubRoot is a null pointer.
      *          Pointer to minimum node elsewise.
      */
-    AVLNode<T>* SubTreeMin (AVLNode<T>* SubRoot){
+    AVLNode<T>* SubTreeMin (AVLNode<T>* SubRoot) const{
         if (SubRoot == NULL){
             return NULL;
         } else if ( SubRoot->_Left ==  NULL){
@@ -117,7 +113,7 @@ class AVLTree {
      * @return: NULL if Data is a null pointer or if not found in the tree.
      *          Pointer to the node elsewise.
      */
-    AVLNode<T>* Find (T* Data){
+    AVLNode<T>* Find (T* Data) const{
         if (Data == NULL){
             return NULL;
         }
@@ -161,16 +157,37 @@ class AVLTree {
         B->Height = temp->Height;
         delete temp;
     }
+    
+    /* MaxSubTreeHeight
+     * Description: finds the maximum height of a subtree of a node.
+     * @param Node: Node to find sub-trees' heights.
+     */
+    const int MaxSubTreeHeight (AVLNode<T>* Node) const{
+        AVLNode<T>* left = Node->_Left;
+        AVLNode<T>* right = Node->_Right;
+        if (left == NULL && right == NULL) return 0;
+        if (right == NULL) return left->_Height;
+        if (left->_Height > right->_Height) return left->_Height;
+        return right->_Height;
+    }
 
 public:
     AVLTree(){
         Root=NULL;
     }
     
-    bool IsEmpty() const{
+    /* IsEmpty
+     * Description: Checks wether the tree is empty or not.
+     * @return True if empty.
+     *         False if not empty.
+     */
+    const bool IsEmpty() const{
         return (Root == NULL);
     }
     
+    /* Insert
+     * Description: Adds a node with provided data to the tree.
+     */
     void Insert(T* Data){
         /*
          * 1. find parent (if tree is empty add as root and return)
@@ -190,18 +207,16 @@ public:
             Root = tmp;
             return;
         }
-        AVLNode<T>* Current = Root;
-        //Step 1
-        while (Current){
-            parent = Current;
-            if (*tmp < *Current) {
-                Current = Current->_Left;
+        AVLNode<T>* current = Root;
+        while (current){
+            parent = current;
+            if (*tmp < *current) {
+                current = current->_Left;
             } else{
-                Current = Current->_Right;
+                current = current->_Right;
             }
         }
         tmp->_Parent = parent;
-        //Step 2
         if (*tmp < *parent){
             parent->_Left = tmp;
         }else {
@@ -209,7 +224,6 @@ public:
         }
         UpdateHeights(tmp,"Insert");
         NodeBalanceUpdate(parent);
-        //Step 3
         while (tmp->_Parent){
             parent = tmp->_Parent;
             if (parent->_Balance >= -1 && parent->_Balance <= 1){
@@ -272,25 +286,25 @@ public:
                 delete tmp;
             }
         } else {
-            AVLNode<T>* ToSwap = SubTreeMin(tmp->_Right);
-            AVLNode<T>* SwapParent = ToSwap->_Parent;
-            SwapParent->_Left=NULL;
+            AVLNode<T>* toSwap = SubTreeMin(tmp->_Right);
+            AVLNode<T>* swapParent = toSwap->_Parent;
+            swapParent->_Left=NULL;
             if (parent->_Right == tmp){
-                parent->_Right = ToSwap;
-                SwapNodes(tmp, ToSwap);
+                parent->_Right = toSwap;
+                SwapNodes(tmp, toSwap);
             }else {
-                parent->_Left = ToSwap;
-                SwapNodes(tmp, ToSwap);
+                parent->_Left = toSwap;
+                SwapNodes(tmp, toSwap);
             }
             delete tmp;
-            if (SwapParent->_Height >= 2){
-                NodeBalanceUpdate(SwapParent);
+            if (swapParent->_Height >= 2){
+                NodeBalanceUpdate(swapParent);
             } else {
-                if (SwapParent->_Right){
-                    NodeBalanceUpdate(SwapParent);
+                if (swapParent->_Right){
+                    NodeBalanceUpdate(swapParent);
                 }else{
-                    UpdateHeights(SwapParent, "Remove");
-                    NodeBalanceUpdate(SwapParent);
+                    UpdateHeights(swapParent, "Remove");
+                    NodeBalanceUpdate(swapParent);
                 }
             }
             
@@ -298,6 +312,12 @@ public:
         
     }
 
+    /* IsIn
+     * Description: Checks wether certain data is in the tree or not.
+     * @param Data: data to check for.
+     * @return: True if a node with supplied data exists in the tree.
+     *          False if supplied data is a null pointer or doesn't exist in the tree.
+     */
     bool IsIn(T* Data){
         AVLNode<T>* current = Root;
         while(current){
@@ -314,29 +334,30 @@ public:
         return false;
     }
 
+    /* GetMin
+     * Description: Gets a pointer to the minimal node value in the tree.
+     * @return: NULL if tree is empty.
+     *          Pointer to minimal node elsewise.
+     */
     AVLNode<T>* GetMin (){
         return SubTreeMin(Root);
     }
     
+    /* RightRight
+     * Description: Performs a right-right roll correction in order
+     *              to maintain AVL qualities of the tree.
+     * @param Node: Node that's out of AVL balance.
+     * @return: //TODO
+     */
     AVLNode<T>* RightRight (AVLNode<T>* Node){
-        return Node;
-    }
-    AVLNode<T>* RightLeft (AVLNode<T>* Node){
-        return Node;
-    }
-    AVLNode<T>* LeftRight (AVLNode<T>* Node){
-        return Node;
-    }
-    AVLNode<T>* LeftLeft (AVLNode<T>* Node){
-        AVLNode<T>* child = Node->_Left;
-        AVLNode<T>* grandChild= child->_Left;
+        AVLNode<T>* child = Node->_Right;
         AVLNode<T>* parent = Node->_Parent;
-        Node->_Left = child->_Right;
+        Node->_Right = child->_Left;
         child->_Parent = parent;
-        if (Node->_Left == NULL){
-            if (Node->_Right){
-                Node->_Height = Node->_Right->_Height+1;
-                //update its balance as well
+        if (Node->_Right == NULL){
+            if (Node->_Left){
+                Node->_Height = Node->_Left->_Height+1;
+                
             } else {
                 Node->_Height = 0;
             }
@@ -349,8 +370,96 @@ public:
                 parent->_Right = child;
             }
         }
-        UpdateHeights(child, "Insert");
-        NodeBalanceUpdate(grandChild);
+        UpdateHeights(child, "Roll");
+        NodeBalanceUpdate(child->_Right);
+        NodeBalanceUpdate(Node);
+        return Node;
+    }
+    
+    /* RightLeft
+     * Description: Performs a right-left roll correction in order
+     *              to maintain AVL qualities of the tree.
+     * @param Node: Node that's out of AVL balance.
+     * @return: //TODO
+     */
+    AVLNode<T>* RightLeft (AVLNode<T>* Node){
+        AVLNode<T>* child = Node->_Right;
+        AVLNode<T>* grandChild = child->_Left;
+        AVLNode<T>* parent = Node->_Parent;
+        child->_Left = grandChild->_Right;
+        Node->_Right = grandChild->_Left;
+        grandChild->_Left = child;
+        grandChild->_Right = Node;
+        
+        if (parent){
+            if (parent->_Left == Node){
+                parent->_Left = grandChild;
+            } else {
+                parent->_Right = grandChild;
+            }
+        }
+        //UpdateHeights
+        //NodeBalanceUpdate
+        return Node;
+    }
+    
+    /* LeftRight
+     * Description: Performs a left-right roll correction in order
+     *              to maintain AVL qualities of the tree.
+     * @param Node: Node that's out of AVL balance.
+     * @return: //TODO
+     */
+    AVLNode<T>* LeftRight (AVLNode<T>* Node){
+        AVLNode<T>* child = Node->_Left;
+        AVLNode<T>* grandChild = child->_Right;
+        AVLNode<T>* parent = Node->_Parent;
+        Node->_Left = grandChild->_Right;
+        child->_Right = grandChild->_Left;
+        grandChild->_Left = child;
+        grandChild->_Right = Node;
+        
+        if (parent){
+            if (parent->_Left == Node){
+                parent->_Left = grandChild;
+            } else {
+                parent->_Right = grandChild;
+            }
+        }
+        //UpdateHeights
+        //NodeBalanceUpdate
+        return Node;
+    }
+    
+    /* LeftLeft
+     * Description: Performs a right-right roll correction in order
+     *              to maintain AVL qualities of the tree.
+     * @param Node: Node that's out of AVL balance.
+     * @return: //TODO
+     */
+    AVLNode<T>* LeftLeft (AVLNode<T>* Node){
+        AVLNode<T>* child = Node->_Left;
+        AVLNode<T>* parent = Node->_Parent;
+        Node->_Left = child->_Right;
+        child->_Parent = parent;
+        if (Node->_Left == NULL){
+            if (Node->_Right){
+                Node->_Height = Node->_Right->_Height+1;
+                
+            } else {
+                Node->_Height = 0;
+            }
+        }
+        child->_Right = Node;
+        if (parent){
+            if (parent->_Left == Node){
+                parent->_Left = child;
+            } else {
+                parent->_Right = child;
+            }
+        }
+        UpdateHeights(child, "Roll");
+        NodeBalanceUpdate(child->_Left);
+        NodeBalanceUpdate(Node);
         return Node;
     }
 };
