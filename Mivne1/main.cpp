@@ -19,6 +19,7 @@ int main(int argc, const char * argv[])
     LeftRightInsertionBasic();
     RightRightInsertionBasic();
     RightLeftInsertionBasic();
+    RLRRRemoveCombo();
     return 0;
 }
 

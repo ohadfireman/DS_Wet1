@@ -289,20 +289,15 @@ public:
         	if (start->_Balance == 2){
         		if (start->_Left->_Balance>=0){
         			start=LeftLeft(start);
-        		}
-        		else {
+        		} else {
         			start=LeftRight(start);
-                    
         		}
-                if (start->_Balance == -2){
-                    if (start->_Right->_Balance <= 0){
-                        start=RightRight(start);
-                        
-                    }
-                    else{
-                        start=RightLeft(start);
-                        
-                    }
+            }
+            if (start->_Balance == -2){
+                if (start->_Right->_Balance <= 0){
+                    start=RightRight(start);
+                } else {
+                    start=RightLeft(start);
                 }
             }
             start=start->_Parent;

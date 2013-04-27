@@ -33,7 +33,7 @@ void InsertRemoveBasic(){
         cout << "InsertRemoveBasic:Test Failed. did not remove all nodes from tree" << endl;
         return;
     }
-        cout << "InsertRemoveBasic: Test passed."<<endl;
+        cout << "InsertRemoveBasic: Test Passed."<<endl;
 
 }
 
@@ -93,6 +93,20 @@ void RightLeftInsertionBasic(){
         cout << "RightLeftInsertionBasic: Test failed. roll did not perform correctly" << endl;
     }
     else cout << "RightLeftInsertionBasic: Test Passed."<<endl;
+}
+
+void RLRRRemoveCombo(){
+    AVLTree<int> tester;
+    int nodes[]={5,2,8,1,4,6,10,3,7,9,12,11};
+    for (int i = 0; i < 12; i++) tester.Insert(nodes+i);
+    tester.Remove(nodes+3);
+    if (tester.IsIn(nodes+3)){
+        cout << "RLRRRemoveCombo: Test failed. node was not removed." << endl;
+    }
+    AVLNode<int>* actual = tester.Find(nodes+2);
+    if (actual->_Parent){
+        cout <<"RLRRRemoveCombo: Test failed. wrong root." <<endl;
+        }else cout << "RLRRRemoveCombo: Test Passed." << endl;
 }
 
 //testing code is generic with strings
