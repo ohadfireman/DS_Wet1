@@ -40,14 +40,14 @@ class AVLTree {
             }
         } else if (Mode == "Remove"){
             while (updater) {
-                if (updater->_Left&&updater->_Right){
-                    updater->_Height=MaxSubTreeHeight(updater)+1;
+                if (updater->_Left && updater->_Right){
+                    updater->_Height = MaxSubTreeHeight(updater)+1;
                 }else if (updater->_Left){
-                    updater->_Height=updater->_Left->_Height+1;
+                    updater->_Height = updater->_Left->_Height+1;
                 }else if (updater->_Right){
-                    updater->_Height=updater->_Right->_Height+1;
+                    updater->_Height = updater->_Right->_Height+1;
                 } else {
-                    updater->_Height=0;
+                    updater->_Height = 0;
                 }
                 updater=updater->_Parent;
             }
@@ -109,27 +109,9 @@ class AVLTree {
      * @param B: second node to swap.
      */
     void SwapNodes (AVLNode<T>* A, AVLNode<T>* B){
-       /* AVLNode<T>* temp=new AVLNode<T>();
-        temp->Left = A->Left;
-        temp->Right = A->Right;
-        temp->Parent = A->Parent;
-        temp->Balance = A->Balance;
-        temp->Height = A->Height;
-        A->Left = B->Left;
-        A->Right = B->Right;
-        A->Parent = B->Parent;
-        A->Balance = B->Balance;
-        A->Height = B->Height;
-        B->Left = temp->Left;
-        B->Right = temp->Right;
-        B->Parent = temp->Parent;
-        B->Balance = temp->Balance;
-        B->Height = temp->Height;
-        delete temp;*/
         T temp=A->_Data;
         A->_Data=B->_Data;
         B->_Data=temp;
-
     }
     
     /* MaxSubTreeHeight
@@ -311,19 +293,6 @@ public:
      *          False if supplied data is a null pointer or doesn't exist in the tree.
      */
     bool IsIn(T* Data){
-        /*AVLNode<T>* current = Root;
-        while(current){
-            if (*Data < *(current->_Data)){
-                current=current->_Left;
-                continue;
-            }
-            if  (*Data > *(current->_Data)){
-                current=current->_Right;
-                continue;
-            }
-            return true;
-        }
-        return false;*/
         if (Find(Data)){
             return true;
         }
@@ -383,18 +352,20 @@ public:
                 Node->_Height = 0;
             }
         }
-        child->_Right = Node;
+        child->_Left = Node;
+        Node->_Parent = child;
         if (parent){
             if (parent->_Left == Node){
                 parent->_Left = child;
             } else {
                 parent->_Right = child;
             }
-        }
+        } else Root = child;
+        Node->_Height = MaxSubTreeHeight(Node)+1;
         UpdateHeights(child, "Roll");
         NodeBalanceUpdate(child->_Right);
         NodeBalanceUpdate(Node);
-        return Node;
+        return child;
     }
     
     /* RightLeft
@@ -407,21 +378,23 @@ public:
         AVLNode<T>* child = Node->_Right;
         AVLNode<T>* grandChild = child->_Left;
         AVLNode<T>* parent = Node->_Parent;
-        child->_Left = grandChild->_Right;
-        Node->_Right = grandChild->_Left;
-        grandChild->_Left = child;
-        grandChild->_Right = Node;
-        child->_Parent = grandChild;
-        grandChild->_Parent = parent;
+        child->_Left = grandChild->_Right;  //Making Right step on child.
+        grandChild->_Right=child;
+        grandChild->_Parent=Node;
+        Node->_Right=grandChild;
+        child->_Parent=grandChild;
+        Node->_Parent=grandChild;   //Making Left step on Node
+        Node->_Right=grandChild->_Left;
+        grandChild->_Parent=parent;
+        grandChild->_Left=Node;
         if (parent){
-            if (parent->_Left == Node){
-                parent->_Left = grandChild;
-            } else {
-                parent->_Right = grandChild;
-            }
+        	if (parent->_Left == Node){
+        		parent->_Left = grandChild;
+        	} else {
+        		parent->_Right = grandChild;
+        	}
         } else Root = grandChild;
         UpdateHeights(Node, "Roll");
-        Node->_Parent=grandChild;
         UpdateHeights(child, "Roll");
         NodeBalanceUpdate(Node);
         NodeBalanceUpdate(child);
@@ -434,7 +407,7 @@ public:
      * @param Node: Node that's out of AVL balance.
      * @return: //TODO
      */
-    AVLNode<T>* LeftRight (AVLNode<T>* Node){
+    AVLNode<T>* LeftRight (AVLNode<T>* Node){  //TODO REVIEW METHOD(probably needs the same fix as RL
         AVLNode<T>* child = Node->_Left;
         AVLNode<T>* grandChild = child->_Right;
         AVLNode<T>* parent = Node->_Parent;
@@ -478,14 +451,15 @@ public:
             }
         }
         child->_Right = Node;
+        Node->_Parent = child;
         if (parent){
             if (parent->_Left == Node){
                 parent->_Left = child;
             } else {
                 parent->_Right = child;
             }
-        }
-        Node->_Height = MaxSubTreeHeight(Node);
+        } else Root = child;
+        Node->_Height = MaxSubTreeHeight(Node)+1;
         UpdateHeights(child, "Roll");
         NodeBalanceUpdate(child->_Left);
         NodeBalanceUpdate(Node);

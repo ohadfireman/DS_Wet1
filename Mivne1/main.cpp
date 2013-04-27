@@ -14,13 +14,13 @@ using namespace std;
 
 int main(int argc, const char * argv[])
 {
-/*    InsertRemoveBasic();
+    InsertRemoveBasic();
     LeftLeftInsertionBasic();
     LeftRightInsertionBasic();
     RightRightInsertionBasic();
     RightLeftInsertionBasic();
     InsertionCombo();
-    InsertionCombo2();*/
+    InsertionCombo2();
     LeftLeftRemove();
     RLRRRemoveCombo();
     return 0;
