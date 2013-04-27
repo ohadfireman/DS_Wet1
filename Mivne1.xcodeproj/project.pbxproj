@@ -25,6 +25,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		CF6AAD2A172BA50C00C174DF /* AVLTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AVLTests.h; sourceTree = "<group>"; };
 		CF807BB51724FB160073CC01 /* Student.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Student.h; sourceTree = "<group>"; };
 		CF807BB61724FD4D0073CC01 /* DS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DS.h; sourceTree = "<group>"; };
 		CF9BB5F217210F7600580076 /* Mivne1 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Mivne1; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -75,6 +76,7 @@
 				CFBBA007172A6E4600128E43 /* AVLNode.h */,
 				CF9BB5F717210F7600580076 /* Mivne1.1 */,
 				CF807BB61724FD4D0073CC01 /* DS.h */,
+				CF6AAD2A172BA50C00C174DF /* AVLTests.h */,
 				CF807BB51724FB160073CC01 /* Student.h */,
 			);
 			path = Mivne1;

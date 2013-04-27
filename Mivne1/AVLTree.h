@@ -39,20 +39,15 @@ class AVLTree {
                 updater = updater->_Parent;
             }
         } else if (Mode == "Remove"){
-            Node->_Height=0;
-            updater = Node->_Parent;
             while (updater) {
-                if (updater->_Right){
-                    if(updater->_Height == updater->_Right->_Height+1){
-                        break;
-                    }
-                    if (updater->_Left->_Height > updater->_Right->_Height){
-                        updater->_Height = updater->_Left->_Height+1;
-                    } else {
-                        updater->_Height = updater->_Right->_Height+1;
-                    }
+                if (updater->_Left&&updater->_Right){
+                    updater->_Height=MaxSubTreeHeight(updater)+1;
+                }else if (updater->_Left){
+                    updater->_Height=updater->_Left->_Height+1;
+                }else if (updater->_Right){
+                    updater->_Height=updater->_Right->_Height+1;
                 } else {
-                    (updater->_Height)--;
+                    updater->_Height=0;
                 }
                 updater=updater->_Parent;
             }
@@ -70,7 +65,7 @@ class AVLTree {
      *              somewhere in a tree up to the root of the tree.
      * @param Node: Node to start updating from.
      */
-    void NodeBalanceUpdate(AVLNode<T>* Node){ //TODO write recursive!!!!
+    void NodeBalanceUpdate(AVLNode<T>* Node){
         if (!Node){
             return;
         }
@@ -107,31 +102,6 @@ class AVLTree {
         return min;
     }
     
-    /* Find
-     * Description: finds a node with certain data in the tree.
-     * @param Data: data to match node.
-     * @return: NULL if Data is a null pointer or if not found in the tree.
-     *          Pointer to the node elsewise.
-     */
-    AVLNode<T>* Find (T* Data) const{
-        if (Data == NULL){
-            return NULL;
-        }
-        AVLNode<T>* toReturn = Root;
-        while (toReturn){
-            if (*Data < *(toReturn->Data)){
-                toReturn=toReturn->Left;
-                continue;
-            }
-            if  (*Data > *(toReturn->Data)){
-                toReturn=toReturn->Right;
-                continue;
-            }
-            break;
-        }
-        return toReturn;
-    }
-    
     /* SwapNodes
      * Description: swaps the places of two nodes as part of a binary search tree
      *              node removal.
@@ -139,7 +109,7 @@ class AVLTree {
      * @param B: second node to swap.
      */
     void SwapNodes (AVLNode<T>* A, AVLNode<T>* B){
-        AVLNode<T>* temp=new AVLNode<T>();
+       /* AVLNode<T>* temp=new AVLNode<T>();
         temp->Left = A->Left;
         temp->Right = A->Right;
         temp->Parent = A->Parent;
@@ -155,7 +125,11 @@ class AVLTree {
         B->Parent = temp->Parent;
         B->Balance = temp->Balance;
         B->Height = temp->Height;
-        delete temp;
+        delete temp;*/
+        T temp=A->_Data;
+        A->_Data=B->_Data;
+        B->_Data=temp;
+
     }
     
     /* MaxSubTreeHeight
@@ -165,10 +139,13 @@ class AVLTree {
     const int MaxSubTreeHeight (AVLNode<T>* Node) const{
         AVLNode<T>* left = Node->_Left;
         AVLNode<T>* right = Node->_Right;
-        if (left == NULL && right == NULL) return 0;
-        if (right == NULL) return left->_Height;
-        if (left->_Height > right->_Height) return left->_Height;
-        return right->_Height;
+        int toReturn = -1;
+        if (left == NULL && right == NULL) toReturn = 0;
+        else if (right == NULL) toReturn = left->_Height;
+         else if (left == NULL) toReturn = right->_Height;
+          else if (left->_Height > right->_Height) toReturn = left->_Height;
+           else toReturn = right->_Height;
+        return toReturn;
     }
 
 public:
@@ -261,15 +238,21 @@ public:
         }
         AVLNode<T>* tmp = Find(Data);
         AVLNode<T>* parent = tmp->_Parent;
-        if (tmp->Height == 0){
-            if ( *(parent->_Left->_Data) == *(tmp->_Data)){
+        AVLNode<T>* start=parent;
+        if (tmp->_Height == 0){								//a leaf
+            if (parent){
+                if ( parent->_Left->_Data == tmp->_Data){
+                    delete tmp;
+                    parent->_Left = NULL;
+                } else {
+                    delete tmp;
+                    parent->_Right = NULL;
+                }
+            } else{
                 delete tmp;
-                parent->_Left = NULL;
-            } else {
-                delete tmp;
-                parent->_Right = NULL;
+                Root = NULL;
             }
-        } else if (tmp->_Left && tmp->_Right==NULL){
+        } else if (tmp->_Left && tmp->_Right==NULL){	//only left son
             if (parent->_Left == tmp){
                 parent->_Left = tmp->_Left;
                 delete tmp;
@@ -277,39 +260,53 @@ public:
                 parent->_Right = tmp->_Left;
                 delete tmp;
             }
-        } else if (tmp->_Right && tmp->_Left==NULL){
+        } else if (tmp->_Right && tmp->_Left==NULL){	//only right son
             if (parent->_Left == tmp){
                 parent->_Left = tmp->_Right;
                 delete tmp;
             } else if (parent->_Right == tmp){
-            parent->_Right = tmp->_Right;
+                parent->_Right = tmp->_Right;
                 delete tmp;
             }
-        } else {
-            AVLNode<T>* toSwap = SubTreeMin(tmp->_Right);
+        } else {										//two sons
+            AVLNode<T>* toSwap = SubTreeMin(tmp->_Right);		//find the preceding node
             AVLNode<T>* swapParent = toSwap->_Parent;
+            swapParent->_Left=tmp;
+            SwapNodes(tmp, toSwap);
+            if (toSwap->_Right != NULL){
+            	swapParent->_Left=toSwap->_Right;
+            	toSwap->_Parent=swapParent;
+            }
             swapParent->_Left=NULL;
-            if (parent->_Right == tmp){
-                parent->_Right = toSwap;
-                SwapNodes(tmp, toSwap);
-            }else {
-                parent->_Left = toSwap;
-                SwapNodes(tmp, toSwap);
-            }
-            delete tmp;
-            if (swapParent->_Height >= 2){
-                NodeBalanceUpdate(swapParent);
-            } else {
-                if (swapParent->_Right){
-                    NodeBalanceUpdate(swapParent);
-                }else{
-                    UpdateHeights(swapParent, "Remove");
-                    NodeBalanceUpdate(swapParent);
-                }
-            }
+            start=swapParent;
+            
+            delete toSwap;
             
         }
-        
+        while (start != NULL){
+        	UpdateHeights(start, "Remove");
+        	NodeBalanceUpdate(start);
+        	if (start->_Balance == 2){
+        		if (start->_Left->_Balance>=0){
+        			start=LeftLeft(start);
+        		}
+        		else {
+        			start=LeftRight(start);
+                    
+        		}
+                if (start->_Balance == -2){
+                    if (start->_Right->_Balance <= 0){
+                        start=RightRight(start);
+                        
+                    }
+                    else{
+                        start=RightLeft(start);
+                        
+                    }
+                }
+            }
+            start=start->_Parent;
+        }
     }
 
     /* IsIn
@@ -319,7 +316,7 @@ public:
      *          False if supplied data is a null pointer or doesn't exist in the tree.
      */
     bool IsIn(T* Data){
-        AVLNode<T>* current = Root;
+        /*AVLNode<T>* current = Root;
         while(current){
             if (*Data < *(current->_Data)){
                 current=current->_Left;
@@ -331,7 +328,36 @@ public:
             }
             return true;
         }
+        return false;*/
+        if (Find(Data)){
+            return true;
+        }
         return false;
+    }
+    
+    /* Find
+     * Description: finds a node with certain data in the tree.
+     * @param Data: data to match node.
+     * @return: NULL if Data is a null pointer or if not found in the tree.
+     *          Pointer to the node elsewise.
+     */
+    AVLNode<T>* Find (T* Data) const{
+        if (Data == NULL){
+            return NULL;
+        }
+        AVLNode<T>* toReturn = Root;
+        while (toReturn){
+            if (*Data < toReturn->_Data){
+                toReturn=toReturn->_Left;
+                continue;
+            }
+            if  (*Data > toReturn->_Data){
+                toReturn=toReturn->_Right;
+                continue;
+            }
+            break;
+        }
+        return toReturn;
     }
 
     /* GetMin
@@ -390,7 +416,8 @@ public:
         Node->_Right = grandChild->_Left;
         grandChild->_Left = child;
         grandChild->_Right = Node;
-        
+        child->_Parent = grandChild;
+        grandChild->_Parent = parent;
         if (parent){
             if (parent->_Left == Node){
                 parent->_Left = grandChild;
@@ -398,9 +425,12 @@ public:
                 parent->_Right = grandChild;
             }
         }
-        //UpdateHeights
-        //NodeBalanceUpdate
-        return Node;
+        UpdateHeights(Node, "Roll");
+        Node->_Parent=grandChild;
+        UpdateHeights(child, "Roll");
+        NodeBalanceUpdate(Node);
+        NodeBalanceUpdate(child);
+        return grandChild;
     }
     
     /* LeftRight
@@ -416,8 +446,9 @@ public:
         Node->_Left = grandChild->_Right;
         child->_Right = grandChild->_Left;
         grandChild->_Left = child;
+        child->_Parent = grandChild;
         grandChild->_Right = Node;
-        
+        grandChild->_Parent = parent;
         if (parent){
             if (parent->_Left == Node){
                 parent->_Left = grandChild;
@@ -425,9 +456,12 @@ public:
                 parent->_Right = grandChild;
             }
         }
-        //UpdateHeights
-        //NodeBalanceUpdate
-        return Node;
+        UpdateHeights(Node, "Roll");
+        Node->_Parent=grandChild;
+        UpdateHeights(child, "Roll");
+        NodeBalanceUpdate(Node);
+        NodeBalanceUpdate(child);
+        return grandChild;
     }
     
     /* LeftLeft
@@ -462,6 +496,7 @@ public:
         NodeBalanceUpdate(Node);
         return Node;
     }
+    
 };
 
 #endif /* defined(__Mivne1__BTree__) */
