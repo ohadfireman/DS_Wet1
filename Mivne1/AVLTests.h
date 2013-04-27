@@ -95,6 +95,42 @@ void RightLeftInsertionBasic(){
     else cout << "RightLeftInsertionBasic: Test Passed."<<endl;
 }
 
+void InsertionCombo(){
+    AVLTree<int> tester;
+    int nodes[]={50,20,80,70,90,75};
+    for (int i = 0; i < 6; i++) tester.Insert(nodes+i);
+    AVLNode<int>* actual = tester.Find(nodes+3);
+    if (actual->_Parent){
+        cout << "InsertionCombo: Test Failed. wrong root" << endl;
+    } else cout << "InsertionCombo: Test Passed." << endl;
+}
+
+void InsertionCombo2(){
+    AVLTree<int> tester;
+    int nodes[]={50,20,90,10,40,70,100,5,15,30,45,35};
+    for (int i = 0; i < 12; i++) tester.Insert(nodes+i);
+    AVLNode<int>* actual = tester.Find(nodes+4);
+    if (actual->_Parent) cout << "InsertionCombo2: Test Failed. wrong root." << endl;
+    else cout << "InsertionCombo2: Test Passed." << endl;
+
+}
+
+void LeftLeftRemove(){
+    AVLTree<int> tester;
+    int nodes[]={12,8,15,6,10,14,24,4,11,13,20,29,19,18};
+    for (int i = 0; i < 14 ; i++) tester.Insert(nodes+i);
+    tester.Remove(nodes+11);
+    if (tester.IsIn(nodes+11)) {
+        cout << "LeftLeftRemove: Test Failed. node was not removed" << endl;
+        return;
+    }
+    AVLNode<int>* actual = tester.Find(nodes+6);
+    if  (actual->_Parent->_Data == 19 && actual->_Left->_Data == 20){
+        cout << "LeftLeftRemove: Test Passed." << endl;
+    } else cout << "LeftLeftRemove: Test Failed. did not update all node data" << endl;
+    
+}
+
 void RLRRRemoveCombo(){
     AVLTree<int> tester;
     int nodes[]={5,2,8,1,4,6,10,3,7,9,12,11};
@@ -110,5 +146,7 @@ void RLRRRemoveCombo(){
 }
 
 //testing code is generic with strings
+        
+
 
 #endif

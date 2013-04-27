@@ -139,8 +139,8 @@ class AVLTree {
     const int MaxSubTreeHeight (AVLNode<T>* Node) const{
         AVLNode<T>* left = Node->_Left;
         AVLNode<T>* right = Node->_Right;
-        int toReturn = -1;
-        if (left == NULL && right == NULL) toReturn = 0;
+        int toReturn;
+        if (left == NULL && right == NULL) toReturn = -1;
         else if (right == NULL) toReturn = left->_Height;
          else if (left == NULL) toReturn = right->_Height;
           else if (left->_Height > right->_Height) toReturn = left->_Height;
@@ -472,8 +472,7 @@ public:
         child->_Parent = parent;
         if (Node->_Left == NULL){
             if (Node->_Right){
-                Node->_Height = Node->_Right->_Height+1;
-                
+                Node->_Height = Node->_Right->_Height+1; 
             } else {
                 Node->_Height = 0;
             }
@@ -486,10 +485,11 @@ public:
                 parent->_Right = child;
             }
         }
+        Node->_Height = MaxSubTreeHeight(Node);
         UpdateHeights(child, "Roll");
         NodeBalanceUpdate(child->_Left);
         NodeBalanceUpdate(Node);
-        return Node;
+        return child;
     }
     
 };
