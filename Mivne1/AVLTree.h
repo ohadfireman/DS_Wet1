@@ -209,16 +209,16 @@ public:
             }
             if (parent->_Balance >= 2){
                 if (parent->_Left->_Balance >= 0){
-                    parent=LeftLeft(parent);
+                    parent = LeftLeft(parent);
                 } else if (parent->_Left->_Balance == -1){
-                    parent=LeftRight(parent);
+                    parent = LeftRight(parent);
                 }
             }
             else {
                 if (parent->_Right->_Balance <= 0){
-                    RightRight(parent);
+                    parent = RightRight(parent);
                 } else if (parent->_Right->_Balance == 1){
-                    RightLeft(parent);
+                    parent = RightLeft(parent);
                 }
             }
             tmp = parent;
@@ -424,7 +424,7 @@ public:
             } else {
                 parent->_Right = grandChild;
             }
-        }
+        } else Root = grandChild;
         UpdateHeights(Node, "Roll");
         Node->_Parent=grandChild;
         UpdateHeights(child, "Roll");
@@ -455,7 +455,7 @@ public:
             } else {
                 parent->_Right = grandChild;
             }
-        }
+        } else Root = grandChild;
         UpdateHeights(Node, "Roll");
         Node->_Parent=grandChild;
         UpdateHeights(child, "Roll");

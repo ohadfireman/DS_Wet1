@@ -18,6 +18,7 @@ int main(int argc, const char * argv[])
     LeftLeftInsertionBasic();
     LeftRightInsertionBasic();
     RightRightInsertionBasic();
+    RightLeftInsertionBasic();
     return 0;
 }
 

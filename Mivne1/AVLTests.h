@@ -82,7 +82,18 @@ void RightRightInsertionBasic(){
     }
 }
 
-
+void RightLeftInsertionBasic(){
+    AVLTree<int> tester;
+    int nodes[]={11,8,19,6,10,13,25,12,17,23,29,15};
+    for (int i = 0; i< 12; i++){
+        tester.Insert(nodes+i);
+    }
+    AVLNode<int>* actual = tester.Find(nodes+5);
+    if (actual->_Parent){
+        cout << "RightLeftInsertionBasic: Test failed. roll did not perform correctly" << endl;
+    }
+    else cout << "RightLeftInsertionBasic: Test Passed."<<endl;
+}
 
 //testing code is generic with strings
 
