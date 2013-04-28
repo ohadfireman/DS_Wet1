@@ -20,40 +20,56 @@ class DS{
     int _NumberOfCourses;
     AVLTree<Student> Students;
     
-    void unsignStudent(int courseID,AVLNode<Student>* root){//TODO-Rename
-       	if (root == NULL){
+    void unsignStudent(int courseID,AVLNode<Student>* root,char mode){
+           if (root == NULL){
        		return;
        	}
-       	unsignStudent(courseID, root->_Left);
-       	root->_Data.removeCourse(&courseID);
-       	unsignStudent(courseID,root->_Right);
+       	unsignStudent(root->_Left);							////This function was not checked!
+       	if(mode == 'T'){
+       		(root->_CoursesTaken).remove(&courseID);
+       	}
+       	if (mode == 'P'){
+       		(root->_CoursesPending).remove(&courseID);
+       	}
+       	unsignStudent(root->_Right);
     }
 
 public:
     DS():_NumberOfCourses(0){}
     
-    StatusType AddCourse(int CourseID, int Size){
-        if (Size < 0){
-            return INVALID_INPUT;
-        }
-    	Course course(CourseID,Size);		//how to check if allocation error occured?how to check if DS is NULL?
-    	if (Courses.IsIn(&course)){
+     StatusType AddCourse(int CourseID, int Size){
+        try {
+       	if (Size<0){
+    	   return INVALID_INPUT;
+       }
+    	Course course(CourseID,Size);		//This function was not checked!
+    	if (Courses.IsIn(course)){
     		return FAILURE;
     	}
     	Courses.Insert(&course);
     	return SUCCESS;
+    	} catch (bad_alloc& BadAlloc) {
+             return ALLOCATION_ERROR;
+        }
     }
-
     
+
+
+
     StatusType RemoveCourse(int CourseID){
-        Course course(CourseID,0);
+    	try {
+    	Course course(CourseID,0);
     	if (!Courses.IsIn(&course)){
       		return FAILURE;
-       	}
+       	}													//This function was not checked!
        	Courses.Remove(&course);
-       	unsignStudent(CourseID,Students.GetRoot());
-        
+       	unsignStudent(CourseID,Students.GetRoot,'T');
+       	unsignStudent(CourseID,Students.GetRoot,'P');
        	return SUCCESS;
+    	} catch (bad_alloc& BadAlloc) {
+    	       return ALLOCATION_ERROR;
+        }
+        
     }
     
     StatusType AddStudent(int StudentId){ //TODO Test
