@@ -56,21 +56,26 @@ public:
        	return SUCCESS;
     }
     
-    StatusType AddStudent(int StudentId){
+    StatusType AddStudent(int StudentId){ //TODO Test
         Student student(StudentId);
         if (Students.IsIn(&student)){
             return FAILURE;
         }
         try {
             Students.Insert(&student);
-            
         } catch (bad_alloc& BadAlloc) {
             return ALLOCATION_ERROR;
         }
         return SUCCESS;
     }
 
-    StatusType RemoveStudent(int StudentId){
+    StatusType RemoveStudent(int StudentId){ //TODO Test
+        Student student(StudentId);
+        AVLNode<Student>* studentNode = Students.Find(&student);
+        if (!studentNode) return FAILURE;
+        if (studentNode->_Data.GetNumberOfCoursesTaken()){
+            return FAILURE;
+        }
         return SUCCESS;
     }
     

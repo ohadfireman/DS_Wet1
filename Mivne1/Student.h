@@ -14,8 +14,9 @@ class Student {
     int _ID;
     AVLTree<int> _CoursesTaken;
     AVLTree<int> _CoursesPending;
+    int _NumberOfCoursesTaken;
 public:
-    Student():_ID(-1){}
+    Student():_ID(-1),_NumberOfCoursesTaken(0){}
     
     Student(int ID):_ID(ID){}
     
@@ -31,6 +32,7 @@ public:
             if (_CoursesPending.IsIn(CourseID)){
                 _CoursesPending.Remove(CourseID);
             }
+            _NumberOfCoursesTaken++;
             return true;
         }
         return false;
@@ -46,7 +48,10 @@ public:
     
     const bool removeCourse(int* CourseID){
         if (CourseID){
-            _CoursesTaken.Remove(CourseID);
+            if (_CoursesTaken.IsIn(CourseID)){
+                _CoursesTaken.Remove(CourseID);
+                _NumberOfCoursesTaken--;
+            }
             _CoursesPending.Remove(CourseID);
             return true;
         }
@@ -60,6 +65,14 @@ public:
     
     const bool operator> (Student& Comperator) const{
         return (_ID > Comperator.GetID());
+    }
+    
+    const bool operator== (Student& Comperator) const{
+        return (_ID == Comperator.GetID());
+    }
+    
+    const int GetNumberOfCoursesTaken() const{
+        return _NumberOfCoursesTaken;
     }
 };
 

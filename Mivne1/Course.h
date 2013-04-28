@@ -64,12 +64,16 @@ public:
         return true;
     }
     
-    bool operator<(Course& Compared) const{
-        return (_ID < Compared.GetID());
+    const bool operator<(Course& Comperator) const{
+        return (_ID < Comperator.GetID());
     }
     
-    bool operator>(Course& Compared) const{
-        return (_ID > Compared.GetID());
+    const bool operator>(Course& Comperator) const{
+        return (_ID > Comperator.GetID());
+    }
+    
+    const bool operator==(Course& Comperator) const{
+        return (_ID == Comperator.GetID());
     }
     
 };
