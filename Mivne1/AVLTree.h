@@ -380,8 +380,6 @@ public:
         AVLNode<T>* parent = Node->_Parent;
         child->_Left = grandChild->_Right;  //Making Right step on child.
         grandChild->_Right=child;
-        grandChild->_Parent=Node;
-        Node->_Right=grandChild;
         child->_Parent=grandChild;
         Node->_Parent=grandChild;   //Making Left step on Node
         Node->_Right=grandChild->_Left;
@@ -411,11 +409,12 @@ public:
         AVLNode<T>* child = Node->_Left;
         AVLNode<T>* grandChild = child->_Right;
         AVLNode<T>* parent = Node->_Parent;
-        Node->_Left = grandChild->_Right;
         child->_Right = grandChild->_Left;
         grandChild->_Left = child;
         child->_Parent = grandChild;
+        Node->_Left = grandChild->_Right;
         grandChild->_Right = Node;
+        Node->_Parent = grandChild;
         grandChild->_Parent = parent;
         if (parent){
             if (parent->_Left == Node){
