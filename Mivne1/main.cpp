@@ -9,6 +9,7 @@
 #include <iostream>
 #include "AVLTree.h"
 #include "AVLTests.h"
+#include "DS.h"
 using namespace std;
 
 

@@ -16,7 +16,6 @@ class PendingStudent {
     int _PendTiming;
     
 public:
-    <#member functions#>
 };
 
 class Course{
@@ -43,12 +42,15 @@ public:
     }
 
     bool Enroll(int* StudentID){
-        if (StudentID && _AvailableSeats){ //user would get exception for null ptr insert
-            _EnrolledStudents.Insert(StudentID);
-            _AvailableSeats--;
-            return true;
+        if (StudentID){
+            Student student(*StudentID);
+            if (_AvailableSeats){ //user would get exception for null ptr insert
+                _EnrolledStudents.Insert(&student);
+                _AvailableSeats--;
+                return true;
+            }
+            _PendingStudents.Insert(&student);
         }
-        _PendingStudents.Insert(StudentID);
         return false;
     }
     
@@ -56,8 +58,9 @@ public:
         if (!StudentID){
             return false;
         }
-        _EnrolledStudents.Remove(StudentID);
-        _PendingStudents.Remove(StudentID);
+        Student student(*StudentID);
+        _EnrolledStudents.Remove(&student);
+        _PendingStudents.Remove(&student);
         return true;
     }
     

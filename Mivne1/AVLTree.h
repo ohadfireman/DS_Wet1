@@ -465,6 +465,10 @@ public:
         return child;
     }
     
+    AVLNode<T>* GetRoot(){
+        return Root;
+    }
+    
 };
 
 #endif /* defined(__Mivne1__BTree__) */
