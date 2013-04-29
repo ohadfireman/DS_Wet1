@@ -20,13 +20,14 @@ class DS{
     int _NumberOfCourses;
     AVLTree<Student> Students;
     
-    void unsignStudent(int courseID,AVLNode<Student>* root){//TODO-Rename
+    void DropAllStudentsFromCourse(int courseID,AVLNode<Student>* root){ //Refactored the name
+                                                                      //to improve readability
        	if (root == NULL){
        		return;
        	}
-       	unsignStudent(courseID, root->_Left);
+       	DropAllStudentsFromCourse(courseID, root->_Left);
        	root->_Data.removeCourse(&courseID);
-       	unsignStudent(courseID,root->_Right);
+       	DropAllStudentsFromCourse(courseID,root->_Right);
     }
 
 public:
@@ -51,7 +52,7 @@ public:
       		return FAILURE;
        	}
        	Courses.Remove(&course);
-       	unsignStudent(CourseID,Students.GetRoot());
+       	DropAllStudentsFromCourse(CourseID,Students.GetRoot());
         
        	return SUCCESS;
     }
@@ -79,7 +80,25 @@ public:
         return SUCCESS;
     }
     
-    StatusType TakeCourse(int StudentId){
+    StatusType TakeCourse(int StudentID,int CourseID){ //TODO Test
+        Student student(StudentID);
+        Course course(CourseID,0);
+        AVLNode<Student>* studentNode = Students.Find(&student);
+        AVLNode<Course>* courseNode = Courses.Find(&course);
+        if (!studentNode || !courseNode || courseNode->_Data.IsEnrolled(&StudentID)){
+            return FAILURE;
+        }
+        try{
+            if (courseNode->_Data.Enroll(&StudentID)){
+                studentNode->_Data.AddCourseTaken(&CourseID);
+            }else {
+                studentNode->_Data.AddCoursePending(&CourseID);
+            }
+        } catch (bad_alloc& BadAlloc){
+            studentNode->_Data.removeCourse(&CourseID);
+            courseNode->_Data.Leave(&StudentID);
+            return ALLOCATION_ERROR;
+        }
         return SUCCESS;
     }
     

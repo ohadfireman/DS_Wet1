@@ -14,16 +14,22 @@
 class PendingStudent {
     int _StudentID;
     int _PendTiming;
-    
 public:
+    const int GetId() const{
+        return _StudentID;
+    }
+    
+    const int GetPend() const{
+        return _PendTiming;
+    }
 };
 
 class Course{
     int _ID;
     int _Size;
     int _AvailableSeats;
-    AVLTree<Student> _EnrolledStudents;
-    AVLTree<Student> _PendingStudents;
+    AVLTree<Student> _EnrolledStudents; //TODO- maybe switch to int
+    AVLTree<Student> _PendingStudents;  //TODO- switch to PendingStudent
 public:
     Course(): _ID(-1), _Size(0){}
     Course(int Id,int Size):_ID(Id),_Size(Size),_AvailableSeats(Size){}
@@ -44,7 +50,7 @@ public:
     bool Enroll(int* StudentID){
         if (StudentID){
             Student student(*StudentID);
-            if (_AvailableSeats){ //user would get exception for null ptr insert
+            if (_AvailableSeats){
                 _EnrolledStudents.Insert(&student);
                 _AvailableSeats--;
                 return true;
@@ -54,7 +60,7 @@ public:
         return false;
     }
     
-    bool Drop(int* StudentID){
+    bool Leave(int* StudentID){ //Refactored from "Drop"
         if (!StudentID){
             return false;
         }
@@ -62,6 +68,11 @@ public:
         _EnrolledStudents.Remove(&student);
         _PendingStudents.Remove(&student);
         return true;
+    }
+    
+    bool IsEnrolled(int* StudentID){ 
+        Student student(*StudentID);
+        return _EnrolledStudents.IsIn(&student);
     }
     
     const bool operator<(Course& Comperator) const{
