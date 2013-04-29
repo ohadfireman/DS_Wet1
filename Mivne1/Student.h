@@ -9,6 +9,7 @@
 #ifndef Mivne1_Student_h
 #define Mivne1_Student_h
 #include "AVLTree.h"
+#include "LList.h"
 
 class Student {
     int _ID;
@@ -73,6 +74,25 @@ public:
     
     const int GetNumberOfCoursesTaken() const{
         return _NumberOfCoursesTaken;
+    }
+};
+
+class PendCourse {
+    int _CourseID;
+    LListNode* _QueueNode;
+public:
+    PendCourse(int courseID=0,LListNode<<#typename T#>>* node=NULL):_CourseID(courseID),_QueueNode(node){}
+    
+    const bool operator<(&PendCourse comperator){
+        return (_CourseID < comperator._CourseID);
+    }
+    
+    const bool operator>(&PendCourse comperator){
+        return (_CourseID > comperator._CourseID);
+    }
+    
+    const bool operator==(&PendCourse comperator){
+        return (_CourseID == comperator._CourseID);
     }
 };
 

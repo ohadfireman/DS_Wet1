@@ -10,11 +10,13 @@
 #define Mivne1_Course_h
 #include "AVLTree.h"
 #include "Student.h"
+#include "LList.h"
 
 class PendingStudent {
     int _StudentID;
     int _PendTiming;
 public:
+    PendingStudent(int ID,int Timing):_StudentID(ID),_PendTiming(Timing){}
     const int GetId() const{
         return _StudentID;
     }
@@ -28,11 +30,13 @@ class Course{
     int _ID;
     int _Size;
     int _AvailableSeats;
-    AVLTree<Student> _EnrolledStudents; //TODO- maybe switch to int
-    AVLTree<Student> _PendingStudents;  //TODO- switch to PendingStudent
+    int _NumOfPending;
+    AVLTree<int> _EnrolledStudents; //switched to int-doesn't need any extra info in here.
+    LListNode<int>* _PendingHead;
+    LListNode<int>* _PendingTail;
 public:
     Course(): _ID(-1), _Size(0){}
-    Course(int Id,int Size):_ID(Id),_Size(Size),_AvailableSeats(Size){}
+    Course(int Id,int Size):_ID(Id),_Size(Size),_AvailableSeats(Size),_NumOfPending(0){}
     ~Course(){}
     
     int GetID(){
@@ -58,7 +62,8 @@ public:
                 _AvailableSeats--;
                 return true;
             }
-            _PendingStudents.Insert(&student);
+            PendingStudent pend(*StudentID,_NumOfPending+1);
+            _PendingStudents.Insert(&pend);
         }
         return false;
     }
@@ -68,8 +73,19 @@ public:
             return false;
         }
         Student student(*StudentID);
-        _EnrolledStudents.Remove(&student);
-        _PendingStudents.Remove(&student);
+        PendingStudent pend(*StudentID);
+        if (_EnrolledStudents.IsIn(&student)){
+            _EnrolledStudents.Remove(&student);
+            if (!_PendingStudents.IsEmpty()){
+                _PendingStudents.Remove(<#PendingStudent *Data#>)
+            } else {
+                _AvailableSeats++;
+            }
+
+        }else {
+            _PendingStudents.Remove(&student);
+
+        }
         return true;
     }
     
