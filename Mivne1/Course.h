@@ -45,9 +45,12 @@ public:
     
     void IncreaseSize(int Addition){
         _Size += Addition;
+        //TODO- continue working on this.
+        //if there are pending students they need to move from pending to enrolled
+        // according to the new course size
     }
 
-    bool Enroll(int* StudentID){
+    const bool Enroll(int* StudentID){
         if (StudentID){
             Student student(*StudentID);
             if (_AvailableSeats){
@@ -60,7 +63,7 @@ public:
         return false;
     }
     
-    bool Leave(int* StudentID){ //Refactored from "Drop"
+    const bool Leave(int* StudentID){ //Refactored from "Drop"
         if (!StudentID){
             return false;
         }
@@ -70,9 +73,13 @@ public:
         return true;
     }
     
-    bool IsEnrolled(int* StudentID){ 
+    //used to check if student is either on course enrolled tree or pending tree.
+    const bool IsEnrolled(int* StudentID) {
         Student student(*StudentID);
-        return _EnrolledStudents.IsIn(&student);
+        if (_EnrolledStudents.IsIn(&student) || _PendingStudents.IsIn(&student)){
+            return true;
+        }
+            return false;
     }
     
     const bool operator<(Course& Comperator) const{
